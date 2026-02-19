@@ -150,6 +150,29 @@ def to_implies_not(formula: Formula) -> Formula:
     """
     # Task 3.6c
 
+    formula_not_and_or = to_not_and_or(formula)
+    
+    if is_variable(formula_not_and_or.root):
+        return formula_not_and_or
+    
+    if is_unary(formula_not_and_or.root):
+        return Formula('~', to_implies_not(formula_not_and_or.first))
+    
+    if is_binary(formula_not_and_or.root):
+        left = to_implies_not(formula_not_and_or.first)
+        right = to_implies_not(formula_not_and_or.second)
+        
+        if formula_not_and_or.root == '&':
+            not_right = Formula('~', right)
+            implication = Formula('->', left, not_right)
+            return Formula('~', implication)
+        
+        if formula_not_and_or.root == '|':
+            not_left = Formula('~', left)
+            return Formula('->', not_left, right)
+    
+    return formula_not_and_or
+
 def to_implies_false(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
     contains no constants or operators beyond ``'->'`` and ``'F'``.
