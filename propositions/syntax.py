@@ -413,13 +413,15 @@ class Formula:
             template = substitution_map[self.root]
             sub_map = {}
         
-            if self.first is not None:
-                transformed_first = self.first.substitute_operators(substitution_map)
-                sub_map['p'] = transformed_first
+            if is_unary(self.root) or is_binary(self.root):
+                if self.first is not None:
+                        transformed_first = self.first.substitute_operators(substitution_map)
+                        sub_map['p'] = transformed_first
         
-            if self.second is not None:
-                transformed_second = self.second.substitute_operators(substitution_map)
-                sub_map['q'] = transformed_second
+            if is_binary(self.root):
+                if self.second is not None:
+                    transformed_second = self.second.substitute_operators(substitution_map)
+                    sub_map['q'] = transformed_second
         
             return template.substitute_variables(sub_map)
     
@@ -436,3 +438,4 @@ class Formula:
             return Formula(self.root, new_first, new_second)
     
         return Formula(self.root)
+
