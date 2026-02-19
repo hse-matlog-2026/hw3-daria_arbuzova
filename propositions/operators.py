@@ -51,7 +51,7 @@ def to_not_and_or(formula: Formula) -> Formula:
         
         elif f.root == '->':
             return Formula('|', Formula('~', left_converted), right_converted)
-        
+    
         elif f.root == '+':
             left_and_not_right = Formula('&', left_converted, Formula('~', right_converted))
             not_left_and_right = Formula('&', Formula('~', left_converted), right_converted)
