@@ -362,6 +362,23 @@ class Formula:
             assert is_variable(variable)
         # Task 3.3
 
+        if is_variable(self.root) and self.root in substitution_map:
+            return substitution_map[self.root]
+    
+        if is_constant(self.root):
+            return Formula(self.root)
+    
+        if is_unary(self.root):
+            new_first = self.first.substitute_variables(substitution_map)
+            return Formula(self.root, new_first)
+
+        if is_binary(self.root):
+            new_first = self.first.substitute_variables(substitution_map)
+            new_second = self.second.substitute_variables(substitution_map)
+            return Formula(self.root, new_first, new_second)
+    
+        return Formula(self.root)
+
     def substitute_operators(self, substitution_map: Mapping[str, Formula]) -> \
             Formula:
         """Substitutes in the current formula, each constant or operator `op`
