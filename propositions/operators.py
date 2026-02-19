@@ -185,3 +185,25 @@ def to_implies_false(formula: Formula) -> Formula:
         contains no constants or operators beyond ``'->'`` and ``'F'``.
     """
     # Task 3.6d
+
+    formula_implies_not = to_implies_not(formula)
+
+    if is_variable(formula_implies_not.root):
+        return formula_implies_not
+    
+    if formula_implies_not.root == 'F':
+        return formula_implies_not
+    
+    if is_unary(formula_implies_not.root):
+        if formula_implies_not.root == '~':
+            # ~p = p -> F
+            inner = to_implies_false(formula_implies_not.first)
+            return Formula('->', inner, Formula('F'))
+    
+    if is_binary(formula_implies_not.root):
+        if formula_implies_not.root == '->':
+            left = to_implies_false(formula_implies_not.first)
+            right = to_implies_false(formula_implies_not.second)
+            return Formula('->', left, right)
+    
+    return formula_implies_not
