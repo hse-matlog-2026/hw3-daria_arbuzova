@@ -80,6 +80,32 @@ def to_not_and(formula: Formula) -> Formula:
     """
     # Task 3.6a
 
+    formula_not_and_or = to_not_and_or(formula)
+    
+    if is_variable(formula_not_and_or.root):
+        return formula_not_and_or
+    
+    if is_constant(formula_not_and_or.root):
+        return formula_not_and_or
+    
+    if is_unary(formula_not_and_or.root):
+        return Formula('~', to_not_and(formula_not_and_or.first))
+    
+    if is_binary(formula_not_and_or.root):
+        left = to_not_and(formula_not_and_or.first)
+        right = to_not_and(formula_not_and_or.second)
+        
+        if formula_not_and_or.root == '&':
+            return Formula('&', left, right)
+        
+        if formula_not_and_or.root == '|':
+            not_left = Formula('~', left)
+            not_right = Formula('~', right)
+            and_not = Formula('&', not_left, not_right)
+            return Formula('~', and_not)
+    
+    return formula_not_and_or
+
 def to_nand(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
     contains no constants or operators beyond ``'-&'``.
