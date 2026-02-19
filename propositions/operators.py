@@ -119,6 +119,24 @@ def to_nand(formula: Formula) -> Formula:
     """
     # Task 3.6b
 
+    formula_not_and = to_not_and(formula)
+    
+    if is_variable(formula_not_and.root):
+        return formula_not_and
+    
+    if is_unary(formula_not_and.root):
+        inner = to_nand(formula_not_and.first)
+        return Formula('-&', inner, inner)
+    
+    if is_binary(formula_not_and.root):
+        if formula_not_and.root == '&':
+            left = to_nand(formula_not_and.first)
+            right = to_nand(formula_not_and.second)
+            nand = Formula('-&', left, right)
+            return Formula('-&', nand, nand)
+    
+    return formula_not_and
+
 def to_implies_not(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
     contains no constants or operators beyond ``'->'`` and ``'~'``.
