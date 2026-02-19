@@ -408,3 +408,31 @@ class Formula:
                    is_binary(operator)
             assert substitution_map[operator].variables().issubset({'p', 'q'})
         # Task 3.4
+
+        if self.root in substitution_map:
+            template = substitution_map[self.root]
+            sub_map = {}
+        
+            if self.first is not None:
+                transformed_first = self.first.substitute_operators(substitution_map)
+                sub_map['p'] = transformed_first
+        
+            if self.second is not None:
+                transformed_second = self.second.substitute_operators(substitution_map)
+                sub_map['q'] = transformed_second
+        
+            return template.substitute_variables(sub_map)
+    
+        if is_constant(self.root) or is_variable(self.root):
+            return Formula(self.root)
+    
+        if is_unary(self.root):
+            new_first = self.first.substitute_operators(substitution_map)
+            return Formula(self.root, new_first)
+    
+        if is_binary(self.root):
+            new_first = self.first.substitute_operators(substitution_map)
+            new_second = self.second.substitute_operators(substitution_map)
+            return Formula(self.root, new_first, new_second)
+    
+        return Formula(self.root)
