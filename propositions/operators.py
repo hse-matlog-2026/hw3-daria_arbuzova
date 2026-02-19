@@ -28,6 +28,7 @@ def to_not_and_or(formula: Formula) -> Formula:
             return f
 
         left_converted = None
+        
         right_converted = None
         
         if f.first:
