@@ -23,56 +23,49 @@ def to_not_and_or(formula: Formula) -> Formula:
         ``'|'``.
     """
     # Task 3.5
-    def convert(f: Formula) -> Formula:
-        if is_variable(f.root):
-            return f
-
-        left_converted = None
-        
-        right_converted = None
-        
-        if f.first:
-            left_converted = convert(f.first)
-        if f.second:
-            right_converted = convert(f.second)
-
-        if f.root == '~':
-            return Formula('~', left_converted)
-        
-        elif f.root == '&' or f.root == '|':
-            return Formula(f.root, left_converted, right_converted)
-        
-        elif f.root == 'T':
-            p = Formula('p')
-            return Formula('~', Formula('&', p, Formula('~', p)))
-        
-        elif f.root == 'F':
-            p = Formula('p')
-            return Formula('&', p, Formula('~', p))
-        
-        elif f.root == '->':
-            return Formula('|', Formula('~', left_converted), right_converted)
     
-        elif f.root == '+':
-            left_and_not_right = Formula('&', left_converted, Formula('~', right_converted))
-            not_left_and_right = Formula('&', Formula('~', left_converted), right_converted)
-            return Formula('|', left_and_not_right, not_left_and_right)
-        
-        elif f.root == '<->':
-            left_impl = Formula('|', Formula('~', left_converted), right_converted)
-            right_impl = Formula('|', Formula('~', right_converted), left_converted)
-            return Formula('&', left_impl, right_impl)
-        
-        elif f.root == '-&':
-            return Formula('~', Formula('&', left_converted, right_converted))
-        
-        elif f.root == '-|':
-            return Formula('~', Formula('|', left_converted, right_converted))
-        
-        else:
-            raise ValueError(f"Unsupported operator: {f.root}")
+    if is_variable(formula.root):
+        return Formula(formula.root)
     
-    return convert(formula)
+    if formula.root == 'T':
+        p = Formula('p')
+        return Formula('|', p, Formula('~', p))
+    
+    if formula.root == 'F':
+        p = Formula('p')
+        return Formula('&', p, Formula('~', p))
+    
+    if is_unary(formula.root):
+        if formula.root == '~':
+            return Formula('~', to_not_and_or(formula.first))
+    
+    if is_binary(formula.root):
+        left = to_not_and_or(formula.first)
+        right = to_not_and_or(formula.second)
+        
+        if formula.root == '&' or formula.root == '|':
+            return Formula(formula.root, left, right)
+        
+        if formula.root == '->':
+            return Formula('|', Formula('~', left), right)
+        
+        if formula.root == '+':
+            part1 = Formula('&', left, Formula('~', right))
+            part2 = Formula('&', Formula('~', left), right)
+            return Formula('|', part1, part2)
+        
+        if formula.root == '<->':
+            p_implies_q = Formula('|', Formula('~', left), right)
+            q_implies_p = Formula('|', Formula('~', right), left)
+            return Formula('&', p_implies_q, q_implies_p)
+        
+        if formula.root == '-&':
+            return Formula('~', Formula('&', left, right))
+        
+        if formula.root == '-|':
+            return Formula('~', Formula('|', left, right))
+    
+    return formula    
 
 def to_not_and(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
