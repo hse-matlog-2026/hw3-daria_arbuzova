@@ -230,7 +230,8 @@ class Formula:
                     remainder = remainder[length:]
                     break
             if operator is None:
-                return None, 'Expected binary operator'
+                snippet = remainder[:10] + '...' if len(remainder) > 10 else remainder
+                return None, f'Expected binary operator, got "{snippet}"'
 
             second, remainder = Formula._parse_prefix(remainder)
             if second is None:
@@ -360,40 +361,6 @@ class Formula:
         for variable in substitution_map:
             assert is_variable(variable)
         # Task 3.3
-
-            if is_variable(self.root) and self.root in substitution_map:
-                return substitution_map[self.root]
-
-            if is_constant(self.root):
-                return Formula(self.root)
-
-            if is_unary(self.root):
-                new_first = self.first.substitute_variables(substitution_map)
-                return Formula(self.root, new_first)
-
-            if is_binary(self.root):
-                new_first = self.first.substitute_variables(substitution_map)
-                new_second = self.second.substitute_variables(substitution_map)
-                return Formula(self.root, new_first, new_second)
-
-            return Formula(self.root)
-        
-        def substitute_variables(self, substitution_map: Mapping[str, Formula]) -> \
-        Formula:
-    """Substitutes in the current formula, each variable name `v` that is a
-    key in `substitution_map` with the formula `substitution_map[v]`.
-
-    Parameters:
-        substitution_map: mapping defining the substitutions to be
-            performed.
-
-    Returns:
-        The formula resulting from performing all substitutions. Only
-        variable name occurrences originating in the current formula are
-        substituted (i.e., variable name occurrences originating in one of
-        the specified substitutions are not subjected to additional
-        substitutions).
-    """
 
     def substitute_operators(self, substitution_map: Mapping[str, Formula]) -> \
             Formula:
